@@ -145,13 +145,13 @@ function Admin() {
   // ════════════════════════════════════════════════════════════════════════
   if (showSettings) {
     return (
-      <div style={{ maxWidth: 500, margin: "50px auto", padding: "60px 20px" }}>
+      <div style={{ maxWidth: 500, margin: "90px auto", padding: "60px 20px" }}>
         <button onClick={() => { setShowSettings(false); setPwChangeMsg({ text: "", ok: true }); }}
-          style={{ background: "none", border: "none", color: "#b8895f", fontSize: 14, cursor: "pointer", marginBottom: 32, display: "flex", alignItems: "center", gap: 6 }}>
+          style={{ background: "none", border: "none", color: "#b8895f", fontSize: 14, cursor: "pointer", marginBottom: 15, display: "flex", alignItems: "center", gap: 6 }}>
           ← Back to products
         </button>
-        <p style={{ fontSize: 12, letterSpacing: 4, color: "#b8895f", fontWeight: 600, textTransform: "uppercase" }}>Soma Scents</p>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: "#2f221c", marginBottom: 32 }}>Settings</h1>
+        <p style={{ fontSize: 12, letterSpacing: 4, color: "#b8895f", fontWeight: 600, textTransform: "uppercase" }}>Soma Scents</p>
         <div style={{ background: "#fff", border: "1px solid #ede3d8", borderRadius: 20, padding: "28px" }}>
           <h2 style={{ fontSize: 17, fontWeight: 700, color: "#2f221c", marginBottom: 20 }}>🔒 Change password</h2>
           {[["Current password", oldPw, setOldPw], ["New password", newPw, setNewPw], ["Confirm new password", confirmPw, setConfirmPw]].map(([label, val, setter]) => (
