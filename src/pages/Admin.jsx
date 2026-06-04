@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import { useStore } from "../context/StoreContext.jsx";
 
-const DEFAULT_PASSWORD = "lumiere2024";
+const DEFAULT_PASSWORD = "sruti78";
 const PW_KEY = "lumiere_admin_pw";
 function getStoredPassword() { return localStorage.getItem(PW_KEY) || DEFAULT_PASSWORD; }
 
