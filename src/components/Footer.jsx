@@ -57,7 +57,7 @@ function Footer() {
 
         {/* BOTTOM */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 sm:pt-10 text-gray-500 text-xs sm:text-sm text-center sm:text-left">
-          <p>© 2026 CandleLux. All Rights Reserved.</p>
+          <p>© 2026 Soma Scents. All Rights Reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             {["Privacy Policy", "Terms & Conditions", "Shipping Policy"].map((p) => (
               <p key={p} className="hover:text-[#d4a373] transition cursor-pointer">{p}</p>
