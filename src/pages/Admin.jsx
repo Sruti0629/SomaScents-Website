@@ -145,7 +145,7 @@ function Admin() {
   // ════════════════════════════════════════════════════════════════════════
   if (showSettings) {
     return (
-      <div style={{ maxWidth: 500, margin: "0 auto", padding: "60px 20px" }}>
+      <div style={{ maxWidth: 500, margin: "50px auto", padding: "60px 20px" }}>
         <button onClick={() => { setShowSettings(false); setPwChangeMsg({ text: "", ok: true }); }}
           style={{ background: "none", border: "none", color: "#b8895f", fontSize: 14, cursor: "pointer", marginBottom: 32, display: "flex", alignItems: "center", gap: 6 }}>
           ← Back to products
