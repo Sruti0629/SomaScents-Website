@@ -7,7 +7,7 @@ import { useStore } from "../context/StoreContext.jsx";
 const tabToSlug = (tab) => tab.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 
 function FeaturedCollection() {
-  const { addToCart, toggleWishlist, isWishlisted, products, categories, productsLoading, productsError } = useStore();
+  const { addToCart, toggleWishlist, isWishlisted, products, categories, productsLoading } = useStore();
   const [activeTab, setActiveTab] = useState(null);
 
   // Use first category as default once loaded
@@ -27,16 +27,6 @@ function FeaturedCollection() {
         <div className="max-w-7xl mx-auto px-6 text-center py-20">
           <p className="text-[#b8895f] font-semibold animate-pulse">Loading collection…</p>
         </div>
-      </section>
-    );
-  }
-
-  if (productsError) {
-    return (
-      <section role="alert" className="pt-16 pb-16 bg-[#fdf8f3]">
-        <p className="max-w-7xl mx-auto px-6 text-center text-red-700">
-          We couldn’t load the product collection. Please try again later.
-        </p>
       </section>
     );
   }

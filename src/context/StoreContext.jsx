@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { fetchProductCatalog } from "../data/productRepository.js";
+import { loadStoredProducts } from "../data/productStorage.js";
 
 const StoreContext = createContext();
 
@@ -14,43 +14,14 @@ export function StoreProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // ── Shared product catalog from Firestore ───────────────────────────────
-  const [products, setProducts] = useState({});
+  // ── Products saved in this browser ──────────────────────────────────────
+  const [products, setProducts] = useState(loadStoredProducts);
   const categories = Object.keys(products);
-  const [productsLoading, setProductsLoading] = useState(true);
-  const [productsError, setProductsError] = useState("");
+  const productsLoading = false;
 
-  const refreshProducts = async () => {
-    setProductsLoading(true);
-    setProductsError("");
-    try {
-      setProducts(await fetchProductCatalog());
-      return true;
-    } catch (error) {
-      console.error("Could not load product catalog:", error);
-      setProductsError(error.message);
-      return false;
-    } finally {
-      setProductsLoading(false);
-    }
+  const refreshProducts = () => {
+    setProducts(loadStoredProducts());
   };
-
-  useEffect(() => {
-    let active = true;
-    fetchProductCatalog()
-      .then((catalog) => {
-        if (active) setProducts(catalog);
-      })
-      .catch((error) => {
-        console.error("Could not load product catalog:", error);
-        if (active) setProductsError(error.message);
-      })
-      .finally(() => {
-        if (active) setProductsLoading(false);
-      });
-
-    return () => { active = false; };
-  }, []);
 
   // ── Cart helpers ────────────────────────────────────────────────────────
   const addToCart = (product) => {
@@ -90,7 +61,7 @@ export function StoreProvider({ children }) {
         addToCart, removeFromCart, updateQty,
         toggleWishlist, isWishlisted,
         cartCount, wishlistCount,
-        products, categories, productsLoading, productsError,
+        products, categories, productsLoading,
         refetchProducts: refreshProducts,
       }}
     >

@@ -9,20 +9,12 @@ const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1603006905003-be475563
 
 function CollectionPage() {
   const { slug } = useParams();
-  const { addToCart, toggleWishlist, isWishlisted, products, categories, productsLoading, productsError } = useStore();
+  const { addToCart, toggleWishlist, isWishlisted, products, categories, productsLoading } = useStore();
 
   if (productsLoading) {
     return (
       <div className="min-h-screen bg-[#fdf8f3] flex items-center justify-center">
         <p className="text-[#b8895f] font-semibold animate-pulse text-lg">Loading collection…</p>
-      </div>
-    );
-  }
-
-  if (productsError) {
-    return (
-      <div role="alert" className="min-h-screen bg-[#fdf8f3] flex items-center justify-center px-6 text-center text-red-700">
-        We couldn’t load this collection. Please try again later.
       </div>
     );
   }
