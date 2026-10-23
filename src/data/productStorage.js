@@ -2,7 +2,13 @@ import { productsByTab, tabToSlug } from "./defaultProducts.js";
 
 const PRODUCTS_KEY = "soma_scents_products";
 const CATALOG_VERSION_KEY = "soma_scents_catalog_version";
-const CATALOG_VERSION = "1";
+const CATALOG_VERSION = "4";
+const REFRESHED_PRODUCT_IMAGES = {
+  Seasonal: new Set(["Spring Bloom", "Monsoon Petrichor", "Autumn Leaves", "Summer Citrus"]),
+  Birthday: new Set(["Sugar & Cake"]),
+  "Mood Therapy": new Set(["Calm & Breathe"]),
+  "Gift Sets": new Set(["Trio Gift Box", "Anniversary Duo"]),
+};
 
 function createDefaultCatalog() {
   return Object.fromEntries(
@@ -38,7 +44,13 @@ export function loadStoredProducts() {
         for (const item of items) {
           const existingIndex = combinedItems.findIndex((product) => product.name === item.name);
           if (existingIndex === -1) combinedItems.push(item);
-          else combinedItems[existingIndex] = { ...combinedItems[existingIndex], ...item };
+          else combinedItems[existingIndex] = {
+            ...combinedItems[existingIndex],
+            ...item,
+            ...(REFRESHED_PRODUCT_IMAGES[category]?.has(item.name)
+              ? { image: seededItems[existingIndex].image }
+              : {}),
+          };
         }
         defaultProducts[category] = combinedItems;
       }

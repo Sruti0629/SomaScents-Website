@@ -40,15 +40,15 @@ export const productsByTab = {
     { name: "Champagne Toast", description: "Bright citrus and fizzy notes to celebrate.", price: "₹849", image: "https://images.unsplash.com/photo-1603006905003-be475563bc59?q=80&w=600&auto=format&fit=crop" },
   ],
   "Mood Therapy": [
-    { name: "Calm & Breathe", description: "Eucalyptus and peppermint for deep relaxation.", price: "₹849", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1200&auto=format&fit=crop" },
+    { name: "Calm & Breathe", description: "Eucalyptus and peppermint for deep relaxation.", price: "₹849", image: "https://images.unsplash.com/photo-1757528649062-787b727bd3fc?q=80&w=1200&auto=format&fit=crop" },
     { name: "Energy Boost", description: "Citrus zest and green tea to invigorate the mind.", price: "₹799", image: "https://houseofaroma.in/wp-content/uploads/2023/10/LAVENDER-AND-ROSEMARY-1.webp" },
     { name: "Sleep Well", description: "Chamomile and lavender to ease you into sleep.", price: "₹899", image: "https://candles.barcelona/wp-content/uploads/2024/02/bdgo_perp.jpg" },
     { name: "Focus Mode", description: "Rosemary and cedar to sharpen concentration.", price: "₹849", image: "https://m.media-amazon.com/images/I/8135X9G4JuL.jpg" },
   ],
   "Gift Sets": [
-    { name: "Trio Gift Box", description: "Three bestsellers beautifully boxed — perfect for gifting.", price: "₹1999", image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0ff?q=80&w=1200&auto=format&fit=crop" },
+    { name: "Trio Gift Box", description: "Three bestsellers beautifully boxed — perfect for gifting.", price: "₹1999", image: "https://images.unsplash.com/photo-1634799588893-8214fbf44a1b?q=80&w=1200&auto=format&fit=crop" },
     { name: "Festive Hamper", description: "Five seasonal favourites in a luxury gift hamper.", price: "₹2999", image: "https://media.istockphoto.com/id/1436195808/photo/burning-candles-in-the-new-years-interior-and-heart-shaped-christmas-candies.jpg?s=612x612&w=0&k=20&c=Q6wbABeld5RT3aXU4HNr39hzOpJaref8ui9sX2IbDII=" },
-    { name: "Anniversary Duo", description: "Two romantic candles in an elegant keepsake box.", price: "₹1599", image: "https://images.unsplash.com/photo-1519682577862-22b62b24e493?q=80&w=1200&auto=format&fit=crop" },
+    { name: "Anniversary Duo", description: "Two romantic candles in an elegant keepsake box.", price: "₹1599", image: "https://images.unsplash.com/photo-1739912061342-280525e3c20f?q=80&w=1200&auto=format&fit=crop" },
   ],
   "Luxury": [
     { name: "Black Oud Reserve", description: "Premium oud aged in cedarwood — our finest candle.", price: "₹2499", image: "https://inaranewyork.com/cdn/shop/files/il_fullxfull.5719503995_2ddp.jpg?v=1735260441" },
