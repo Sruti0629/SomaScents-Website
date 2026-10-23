@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { supabase } from "./supabase";
+import { useState } from "react";
 import { useStore } from "../context/StoreContext.jsx";
+import { loadStoredProducts, saveStoredProducts } from "../data/productStorage.js";
 
 const DEFAULT_PASSWORD = "sruti78";
 const PW_KEY = "lumiere_admin_pw";
@@ -14,8 +14,8 @@ function Admin() {
 
   // ── Products (local admin state) ──────────────────────────────────────────
   const { refetchProducts } = useStore();
-  const [products, setProducts]             = useState({});
-  const [activeTab, setActiveTab]           = useState("");
+  const [products, setProducts]             = useState(loadStoredProducts);
+  const [activeTab, setActiveTab]           = useState(() => Object.keys(loadStoredProducts())[0] || "");
   const [editingId, setEditingId]           = useState(null); // use id not index
   const [form, setForm]                     = useState({ name: "", price: "", description: "", image: "" });
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -31,29 +31,12 @@ function Admin() {
   const [toast, setToast] = useState("");
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(""), 2800); };
 
-  const totalCount = Object.values(products).reduce((s, a) => s + a.length, 0);
-
   // ── Login ─────────────────────────────────────────────────────────────────
   const handleLogin = () => {
     if (pwInput === getStoredPassword()) { setAuthed(true); setPwError(false); setPwInput(""); }
     else setPwError(true);
   };
   const handleLogout = () => { setAuthed(false); setPwInput(""); setShowSettings(false); };
-
-  // ── Fetch ─────────────────────────────────────────────────────────────────
-  const fetchProducts = async () => {
-    const { data, error } = await supabase.from("products").select("*");
-    if (error) { console.error(error); return; }
-    const grouped = {};
-    data.forEach((p) => {
-      if (!grouped[p.category]) grouped[p.category] = [];
-      grouped[p.category].push(p);
-    });
-    setProducts(grouped);
-    if (Object.keys(grouped).length > 0 && !activeTab) setActiveTab(Object.keys(grouped)[0]);
-  };
-
-  useEffect(() => { fetchProducts(); }, []);
 
   // ── Password change ───────────────────────────────────────────────────────
   const handleChangePassword = () => {
@@ -68,27 +51,35 @@ function Admin() {
   };
 
   // ── CRUD ──────────────────────────────────────────────────────────────────
-  const handleSave = async () => {
+  const handleSave = () => {
     const { name, price, description, image } = form;
     if (!name.trim() || !price) { showToast("Please fill in name and price."); return; }
 
+    const product = { name: name.trim(), price: Number(price), description, image, category: activeTab };
+    const updatedProducts = { ...products };
     if (editingId !== null) {
-      const { error } = await supabase.from("products")
-        .update({ name, price: Number(price), description, image, category: activeTab })
-        .eq("id", editingId);
-      if (error) { showToast("Error updating product"); return; }
-      showToast("✓ Product updated!");
+      updatedProducts[activeTab] = (products[activeTab] || []).map((item) =>
+        item.id === editingId ? { ...item, ...product } : item
+      );
     } else {
-      const { error } = await supabase.from("products")
-        .insert([{ name, price: Number(price), description, image, category: activeTab }]);
-      if (error) { showToast("Error saving product"); return; }
-      showToast("✓ Product added!");
+      updatedProducts[activeTab] = [
+        ...(products[activeTab] || []),
+        { ...product, id: `${Date.now()}-${Math.random().toString(36).slice(2)}` },
+      ];
     }
 
+    try {
+      saveStoredProducts(updatedProducts);
+    } catch (error) {
+      showToast(error.message);
+      return;
+    }
+
+    setProducts(updatedProducts);
     setEditingId(null);
     setForm({ name: "", price: "", description: "", image: "" });
-    await fetchProducts();
-    refetchProducts(); // sync the live storefront
+    refetchProducts();
+    showToast(editingId !== null ? "✓ Product updated!" : "✓ Product added!");
   };
 
   const handleEdit = (product) => {
@@ -97,13 +88,39 @@ function Admin() {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     if (!window.confirm("Delete this product?")) return;
-    const { error } = await supabase.from("products").delete().eq("id", id);
-    if (error) { showToast("Error deleting product"); return; }
-    await fetchProducts();
-    refetchProducts(); // sync the live storefront
+    const updatedProducts = {
+      ...products,
+      [activeTab]: (products[activeTab] || []).filter((product) => product.id !== id),
+    };
+    try {
+      saveStoredProducts(updatedProducts);
+    } catch (error) {
+      showToast(error.message);
+      return;
+    }
+    setProducts(updatedProducts);
+    refetchProducts();
     showToast("✓ Product deleted!");
+  };
+
+  const handleAddCategory = () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    if (!products[name]) {
+      const updatedProducts = { ...products, [name]: [] };
+      try {
+        saveStoredProducts(updatedProducts);
+      } catch (error) {
+        showToast(error.message);
+        return;
+      }
+      setProducts(updatedProducts);
+      refetchProducts();
+    }
+    setActiveTab(name);
+    setNewCategoryName("");
   };
 
   const cancelEdit = () => { setEditingId(null); setForm({ name: "", price: "", description: "", image: "" }); };
@@ -215,21 +232,10 @@ function Admin() {
       <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
         <input type="text" placeholder="+ New category name (e.g. Wedding)"
           value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && newCategoryName.trim()) {
-              const name = newCategoryName.trim();
-              if (!products[name]) { setProducts({ ...products, [name]: [] }); setActiveTab(name); }
-              setNewCategoryName("");
-            }
-          }}
+          onKeyDown={(e) => { if (e.key === "Enter") handleAddCategory(); }}
           style={{ flex: 1, padding: "9px 14px", borderRadius: 10, border: "1.5px solid #ede3d8", fontSize: 14, color: "#2f221c", outline: "none" }}
         />
-        <button onClick={() => {
-            const name = newCategoryName.trim();
-            if (!name) return;
-            if (!products[name]) { setProducts({ ...products, [name]: [] }); setActiveTab(name); }
-            setNewCategoryName("");
-          }}
+        <button onClick={handleAddCategory}
           style={{ background: "#b8895f", color: "#fff", border: "none", borderRadius: 10, padding: "9px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
           Add
         </button>
@@ -308,7 +314,7 @@ function Admin() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#2f221c", color: "#fff", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 500, zIndex: 999, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
+        <div style={{ position: "fixed", bottom: 24, right: 24, maxWidth: "min(420px, calc(100vw - 48px))", background: "#2f221c", color: "#fff", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 500, zIndex: 999, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", overflowWrap: "anywhere" }}>
           {toast}
         </div>
       )}

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "../pages/supabase";
+import { loadStoredProducts } from "../data/productStorage.js";
 
 const StoreContext = createContext();
 
@@ -14,28 +14,14 @@ export function StoreProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // ── Global products state (live from Supabase) ──────────────────────────
-  const [products, setProducts] = useState({});      // { category: [...] }
-  const [categories, setCategories] = useState([]);  // ordered list of category names
-  const [productsLoading, setProductsLoading] = useState(true);
+  // ── Products saved in this browser ──────────────────────────────────────
+  const [products, setProducts] = useState(loadStoredProducts); // { category: [...] }
+  const categories = Object.keys(products);
+  const productsLoading = false;
 
-  const fetchProducts = async () => {
-    setProductsLoading(true);
-    const { data, error } = await supabase.from("products").select("*");
-    if (error) { console.error(error); setProductsLoading(false); return; }
-
-    const grouped = {};
-    data.forEach((p) => {
-      if (!grouped[p.category]) grouped[p.category] = [];
-      grouped[p.category].push(p);
-    });
-
-    setProducts(grouped);
-    setCategories(Object.keys(grouped));
-    setProductsLoading(false);
+  const refreshProducts = () => {
+    setProducts(loadStoredProducts());
   };
-
-  useEffect(() => { fetchProducts(); }, []);
 
   // ── Cart helpers ────────────────────────────────────────────────────────
   const addToCart = (product) => {
@@ -76,7 +62,7 @@ export function StoreProvider({ children }) {
         toggleWishlist, isWishlisted,
         cartCount, wishlistCount,
         products, categories, productsLoading,
-        refetchProducts: fetchProducts,
+        refetchProducts: refreshProducts,
       }}
     >
       {children}

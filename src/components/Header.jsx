@@ -12,6 +12,20 @@ function Header() {
 
   const cartTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
+  const handleWishlistAddToBag = (item) => {
+    const price = typeof item.price === "number"
+      ? item.price
+      : Number(String(item.price).replace(/[^\d.-]/g, ""));
+    if (!Number.isFinite(price)) {
+      console.error("Cannot add wishlist item with invalid price:", item);
+      return;
+    }
+
+    addToCart({ ...item, price });
+    setWishOpen(false);
+    setCartOpen(true);
+  };
+
   const navLinks = [
     { to: "/",          label: "Home" },
     { to: "/categories", label: "Shop" },
@@ -176,7 +190,7 @@ function Header() {
                         {typeof item.price === "number" ? `₹${item.price}` : item.price}
                       </p>
                       <button
-                        onClick={() => { addToCart({ ...item, price: typeof item.price === "number" ? item.price : parseInt(String(item.price).replace(/[^0-9]/g, "")) }); }}
+                        onClick={() => handleWishlistAddToBag(item)}
                         className="mt-2 bg-[#2f221c] hover:bg-[#c68b59] transition text-white px-4 py-1.5 rounded-full text-xs font-medium"
                       >
                         Add to Bag
