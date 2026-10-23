@@ -57,7 +57,7 @@ export const productsByTab = {
   ],
 };
 
-// ─── helpers used by Categories & CollectionPage ───────────────────────────
+// ─── category and product catalog data ────────────────────────────────────
 
 // converts "Festive Mood" → "festive-mood"
 export function tabToSlug(tab) {

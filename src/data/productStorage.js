@@ -1,19 +1,61 @@
+import { productsByTab, tabToSlug } from "./defaultProducts.js";
+
 const PRODUCTS_KEY = "soma_scents_products";
+const CATALOG_VERSION_KEY = "soma_scents_catalog_version";
+const CATALOG_VERSION = "1";
+
+function createDefaultCatalog() {
+  return Object.fromEntries(
+    Object.entries(productsByTab).map(([category, items]) => [
+      category,
+      items.map((product, index) => ({
+        ...product,
+        price: typeof product.price === "number"
+          ? product.price
+          : Number(String(product.price).replace(/[^\d.-]/g, "")),
+        id: `default-${tabToSlug(category)}-${index + 1}`,
+        category,
+      })),
+    ])
+  );
+}
 
 export function loadStoredProducts() {
   try {
     const storedProducts = localStorage.getItem(PRODUCTS_KEY);
-    if (!storedProducts) return {};
-
-    const products = JSON.parse(storedProducts);
+    const version = localStorage.getItem(CATALOG_VERSION_KEY);
+    const products = storedProducts ? JSON.parse(storedProducts) : {};
     if (!products || typeof products !== "object" || Array.isArray(products)) {
       throw new Error("Saved products have an invalid format.");
+    }
+
+    if (version !== CATALOG_VERSION) {
+      const defaultProducts = createDefaultCatalog();
+
+      for (const [category, items] of Object.entries(products)) {
+        const seededItems = defaultProducts[category] || [];
+        const combinedItems = [...seededItems];
+        for (const item of items) {
+          const existingIndex = combinedItems.findIndex((product) => product.name === item.name);
+          if (existingIndex === -1) combinedItems.push(item);
+          else combinedItems[existingIndex] = { ...combinedItems[existingIndex], ...item };
+        }
+        defaultProducts[category] = combinedItems;
+      }
+
+      try {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(defaultProducts));
+        localStorage.setItem(CATALOG_VERSION_KEY, CATALOG_VERSION);
+      } catch (error) {
+        console.error("Could not initialize the default product catalog:", error);
+      }
+      return defaultProducts;
     }
 
     return products;
   } catch (error) {
     console.error("Could not load saved products:", error);
-    return {};
+    return createDefaultCatalog();
   }
 }
 
