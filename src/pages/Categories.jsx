@@ -7,12 +7,22 @@ const tabToSlug = (tab) => tab.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1603006905003-be475563bc59?q=80&w=1200&auto=format&fit=crop";
 
 function Categories() {
-  const { categories, products, productsLoading } = useStore();
+  const { categories, products, productsLoading, productsError } = useStore();
 
   if (productsLoading) {
     return (
       <section className="min-h-screen bg-[#fdf8f3] pt-32 pb-24 px-6 flex items-center justify-center">
         <p className="text-[#b8895f] font-semibold animate-pulse text-lg">Loading collections…</p>
+      </section>
+    );
+  }
+
+  if (productsError) {
+    return (
+      <section className="min-h-screen bg-[#fdf8f3] pt-32 pb-24 px-6 flex items-center justify-center">
+        <p role="alert" className="max-w-xl text-center text-red-700">
+          We couldn’t load the collections. Please try again later.
+        </p>
       </section>
     );
   }
